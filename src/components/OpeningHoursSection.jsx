@@ -4,36 +4,58 @@ export default function OpeningHoursSection({ formData, onChange }) {
       <h2 className="text-lg font-semibold text-gray-800">Giờ mở cửa</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Thứ 2 - Thứ 6 (trừ T4)</label>
-          <input
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Thứ 2 - Thứ 6 (trừ T4)
+          </label>
+          {/* <input
             type="text"
             name="open_mon_fri"
-            value={formData.open_mon_fri || ''}
+            value={formData.open_mon_fri || ""}
             onChange={onChange}
             className="w-full p-2.5 border rounded-lg border-gray-300"
             placeholder="VD: 11:00 - 22:00"
+          /> */}
+          <textarea
+            name="open_mon_fri"
+            rows={2}
+            value={formData.open_mon_fri || ""}
+            onChange={onChange}
+            className="w-full p-2.5 border rounded-lg text-sm resize-y"
+            placeholder="Ví dụ:&#10;11:00 - 13:00&#10;17:00 - 22:00"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Thứ 4</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Thứ 4
+          </label>
           <input
             type="text"
             name="open_wed"
-            value={formData.open_wed || ''}
+            value={formData.open_wed || ""}
             onChange={onChange}
             className="w-full p-2.5 border rounded-lg border-gray-300"
             placeholder="VD: Đóng cửa"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Thứ 7 - Chủ Nhật</label>
-          <input
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Thứ 7 - Chủ Nhật
+          </label>
+          {/* <input
             type="text"
             name="open_sat_sun"
-            value={formData.open_sat_sun || ''}
+            value={formData.open_sat_sun || ""}
             onChange={onChange}
             className="w-full p-2.5 border rounded-lg border-gray-300"
             placeholder="VD: 10:00 - 23:00"
+          /> */}
+          <textarea
+            name="open_sat_sun"
+            rows={2}
+            value={formData.open_sat_sun || ""}
+            onChange={onChange}
+            className="w-full p-2.5 border rounded-lg text-sm resize-y"
+            placeholder="Ví dụ:&#10;11:00 - 13:00&#10;17:00 - 22:00"
           />
         </div>
       </div>
