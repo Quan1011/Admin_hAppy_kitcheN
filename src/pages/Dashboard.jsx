@@ -69,7 +69,7 @@ export default function Dashboard() {
       </div>
 
       {/* Vercel Analytics Notice */}
-      <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-6 mb-6 text-white">
+      {/* <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-6 mb-6 text-white">
         <div className="flex items-start gap-4">
           <div className="p-3 bg-white/10 rounded-lg">
             <TrendingUp className="w-6 h-6" />
@@ -95,7 +95,7 @@ export default function Dashboard() {
             </a>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -176,7 +176,7 @@ export default function Dashboard() {
       </div>
 
       {/* Info Notice */}
-      <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+      {/* <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
         <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
         <div>
           <p className="text-sm text-amber-800">
@@ -184,7 +184,7 @@ export default function Dashboard() {
             Truy cập <a href="https://vercel.com/dashboard" target="_blank" rel="noopener noreferrer" className="underline font-medium">Vercel Dashboard</a> để xem báo cáo đầy đủ.
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
