@@ -61,7 +61,7 @@ export default function DishGroupTable({ groups, categories, onEdit, onDelete })
       cardLabel: 'Giá nền',
       cell: (g) => (
         <span className="font-semibold text-blue-600">
-          {g.base_price ? `${parseFloat(g.base_price).toFixed(2)} €` : '—'}
+          {g.base_price ? `${parseFloat(g.base_price).toFixed(2)}€` : '—'}
         </span>
       ),
     },

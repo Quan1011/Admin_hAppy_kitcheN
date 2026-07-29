@@ -143,7 +143,7 @@ export default function MenuTable({
       cardLabel: 'Giá tiền',
       cell: (item) => (
         <span className="font-semibold text-blue-600">
-          {item.price ? `${parseFloat(item.price).toFixed(2)} €` : '—'}
+          {item.price ? `${parseFloat(item.price).toFixed(2)}€` : '—'}
         </span>
       ),
     },
