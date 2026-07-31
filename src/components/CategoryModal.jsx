@@ -6,6 +6,7 @@ const EMPTY_FORM = {
   name_en: '',
   description_de: '',
   description_en: '',
+  sort_order: 0,
 };
 
 export default function CategoryModal({
@@ -26,6 +27,7 @@ export default function CategoryModal({
         name_en: editingData.name_en ?? '',
         description_de: editingData.description_de ?? '',
         description_en: editingData.description_en ?? '',
+        sort_order: editingData.sort_order ?? 0,
       });
     } else {
       setFormData(EMPTY_FORM);
@@ -122,6 +124,19 @@ export default function CategoryModal({
               </div>
             </div>
           )}
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 mb-1">Thứ tự hiển thị</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.sort_order}
+              onChange={(e) => handleChange('sort_order', parseInt(e.target.value) || 0)}
+              className="w-full p-2.5 border rounded-lg text-sm"
+              placeholder="0"
+            />
+            <p className="mt-1 text-xs text-gray-500">Số nhỏ hơn sẽ hiển thị trước</p>
+          </div>
 
           <div className="pt-4 border-t flex justify-end gap-3">
             <button

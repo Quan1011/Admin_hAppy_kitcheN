@@ -29,7 +29,7 @@ export default function CategoriesManagement() {
     try {
       setLoading(true);
       const [catRes, groupRes, allergenRes, additiveRes] = await Promise.all([
-        supabase.from('categories').select('*').order('id'),
+        supabase.from('categories').select('*').order('sort_order'),
         supabase.from('dish_groups').select('*').order('id'),
         supabase.from('allergens').select('*'),
         supabase.from('additives').select('*'),

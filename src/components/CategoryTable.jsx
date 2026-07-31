@@ -4,11 +4,15 @@ import RowActions from './RowActions';
 export default function CategoryTable({ categories, onEdit, onDelete }) {
   const columns = [
     {
-      key: 'id',
-      header: 'ID',
-      headerClassName: 'w-16',
-      cardLabel: 'ID',
-      cell: (c) => <span className="font-mono text-gray-500">#{c.id}</span>,
+      key: 'sort_order',
+      header: 'Thứ tự',
+      headerClassName: 'w-20',
+      cardLabel: 'Thứ tự',
+      cell: (c) => (
+        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold text-sm">
+          {c.sort_order ?? 0}
+        </span>
+      ),
     },
     {
       key: 'name',
