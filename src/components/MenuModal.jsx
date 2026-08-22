@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../config/supabase';
-import { uploadToCloudinary } from '../config/cloudinary';
+import { uploadToR2 } from '../utils/r2Upload';
+import { compressDishImage } from '../utils/imageCompression';
 import {
   X, Check, Loader2, Image as ImageIcon, Upload, Check as CheckIcon
 } from 'lucide-react';
@@ -98,10 +99,12 @@ export default function MenuModal({
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    e.target.value = '';
 
     try {
       setUploadingImage(true);
-      const url = await uploadToCloudinary(file);
+      const compressed = await compressDishImage(file);
+      const url = await uploadToR2(compressed, 'menu');
       setFormData((prev) => ({ ...prev, image_url: url }));
     } catch (error) {
       toast.error('Tải ảnh thất bại: ' + error.message);

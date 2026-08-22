@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Loader2, Upload, Image as ImageIcon } from 'lucide-react';
-import { uploadToCloudinary } from '../config/cloudinary';
+import { uploadToR2 } from '../utils/r2Upload';
+import { compressHeroImage } from '../utils/imageCompression';
 import toast from 'react-hot-toast';
 
 export default function HeroImageSection({ imageUrl, onChange }) {
@@ -9,10 +10,12 @@ export default function HeroImageSection({ imageUrl, onChange }) {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    e.target.value = '';
 
     try {
       setUploadingImage(true);
-      const url = await uploadToCloudinary(file);
+      const compressed = await compressHeroImage(file);
+      const url = await uploadToR2(compressed, 'hero');
       onChange(url);
     } catch (error) {
       toast.error('Tải ảnh thất bại: ' + error.message);
