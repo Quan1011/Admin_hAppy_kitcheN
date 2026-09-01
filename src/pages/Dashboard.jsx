@@ -1,6 +1,20 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../config/supabase';
-import { UtensilsCrossed, FolderTree, Eye, EyeOff, ExternalLink, TrendingUp, AlertCircle } from 'lucide-react';
+import { UtensilsCrossed, FolderTree, Eye, EyeOff, ExternalLink, TrendingUp, AlertCircle, Globe } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+const getCountryFlag = (countryCode) => {
+  if (!countryCode || countryCode === 'Unknown') return '🌐';
+  try {
+    const codePoints = countryCode
+      .toUpperCase()
+      .split('')
+      .map(char => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+  } catch (e) {
+    return '🌐';
+  }
+};
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -9,6 +23,8 @@ export default function Dashboard() {
     visibleItems: 0,
     hiddenItems: 0,
   });
+  const [analyticsTimeSeries, setAnalyticsTimeSeries] = useState([]);
+  const [analyticsCountries, setAnalyticsCountries] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,12 +55,34 @@ export default function Dashboard() {
         .select('*', { count: 'exact', head: true })
         .eq('is_visible', false);
 
+      // Fetch Vercel Analytics from Supabase Edge Function
+      let fetchedTimeSeries = [];
+      let fetchedCountries = [];
+      try {
+        const { data, error } = await supabase.functions.invoke('hyper-service');
+        if (error) {
+          console.error('Lỗi lấy dữ liệu Analytics:', error);
+        } else {
+          if (data?.error) {
+            console.error('Chi tiết lỗi từ Edge Function:', data.error);
+          } else {
+            console.log('🔥 DỮ LIỆU TỪ EDGE FUNCTION TRẢ VỀ:', data);
+            fetchedTimeSeries = data?.timeSeries || [];
+            fetchedCountries = data?.countries || [];
+          }
+        }
+      } catch (err) {
+        console.error('Lỗi invoke edge function:', err);
+      }
+
       setStats({
         totalCategories: categoriesCount || 0,
         totalMenuItems: menuCount || 0,
         visibleItems: visibleCount || 0,
         hiddenItems: hiddenCount || 0,
       });
+      setAnalyticsTimeSeries(fetchedTimeSeries);
+      setAnalyticsCountries(fetchedCountries);
     } catch (error) {
       console.error('Error fetching stats:', error);
     } finally {
@@ -68,34 +106,126 @@ export default function Dashboard() {
         <p className="text-gray-500 mt-1">Xem thông số và quản lý nhà hàng của bạn</p>
       </div>
 
-      {/* Vercel Analytics Notice */}
-      {/* <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-xl p-6 mb-6 text-white">
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-white/10 rounded-lg">
-            <TrendingUp className="w-6 h-6" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-lg flex items-center gap-2">
-              Vercel Analytics
-              <span className="px-2 py-0.5 bg-green-500/20 text-green-300 text-xs rounded-full font-medium">
-                Đã kích hoạt
-              </span>
-            </h3>
-            <p className="text-gray-300 mt-1 mb-3">
-              Dữ liệu traffic đang được theo dõi. Xem chi tiết analytics trên Vercel Dashboard.
+      {/* Vercel Analytics Chart Section */}
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-blue-600" />
+              Lưu lượng truy cập
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Thống kê lượng khách truy cập website
             </p>
-            <a
-              href="https://vercel.com/dashboard"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-900 rounded-lg font-medium text-sm hover:bg-gray-100 transition-colors"
-            >
-              Mở Vercel Dashboard
-              <ExternalLink className="w-4 h-4" />
-            </a>
           </div>
+          {/* <a
+            href="https://vercel.com/dashboard"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-50 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors border border-gray-200"
+          >
+            Vercel Dashboard
+            <ExternalLink className="w-4 h-4" />
+          </a> */}
         </div>
-      </div> */}
+        
+        {analyticsTimeSeries && analyticsTimeSeries.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-3 h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={analyticsTimeSeries}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f97316" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis 
+                    dataKey="date" 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#6b7280', fontSize: 12 }}
+                    dy={10}
+                  />
+                  <YAxis 
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#6b7280', fontSize: 12 }}
+                    dx={-10}
+                  />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      borderRadius: '8px', 
+                      border: 'none', 
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' 
+                    }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    name="Pageviews (Lượt xem)"
+                    dataKey="pageviews" 
+                    stroke="#f97316" 
+                    strokeWidth={2}
+                    fillOpacity={1} 
+                    fill="url(#colorPageviews)" 
+                    activeDot={{ r: 6, strokeWidth: 0 }}
+                  />
+                  <Area 
+                    type="monotone" 
+                    name="Visitors (Khách)"
+                    dataKey="visitors" 
+                    stroke="#3b82f6" 
+                    strokeWidth={2}
+                    fillOpacity={1} 
+                    fill="url(#colorVisitors)" 
+                    activeDot={{ r: 6, strokeWidth: 0 }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            
+            <div className="lg:col-span-1 border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0 lg:pl-6">
+              <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                <Globe className="w-4 h-4 text-emerald-600" /> Top Quốc Gia
+              </h3>
+              <div className="space-y-4">
+                {analyticsCountries && analyticsCountries.length > 0 ? (
+                  [...analyticsCountries].sort((a, b) => b.visitors - a.visitors).slice(0, 5).map((countryData, idx) => (
+                    <div key={idx} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="">{getCountryFlag(countryData.country)}</span>
+                        <span className="text-sm font-medium text-gray-700">{countryData.country}</span>
+                      </div>
+                      <div className="text-right flex flex-col">
+                        <span className="text-sm font-bold text-gray-800">{countryData.visitors.toLocaleString()} <span className="text-xs font-normal text-gray-500">khách</span></span>
+                        {countryData.pageviews > 0 && (
+                          <span className="text-xs font-medium text-gray-400">{countryData.pageviews.toLocaleString()} views</span>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 italic">Chưa có dữ liệu</p>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-[300px] bg-gray-50 rounded-lg border border-dashed border-gray-200">
+            <TrendingUp className="w-8 h-8 text-gray-400 mb-3" />
+            <p className="text-gray-500 font-medium">Chưa có dữ liệu Analytics</p>
+            <p className="text-sm text-gray-400 mt-1">Đang chờ hệ thống thu thập hoặc kiểm tra lại kết nối Edge Function.</p>
+          </div>
+        )}
+      </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -174,17 +304,6 @@ export default function Dashboard() {
           </a>
         </div>
       </div>
-
-      {/* Info Notice */}
-      {/* <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-        <div>
-          <p className="text-sm text-amber-800">
-            <strong>Lưu ý:</strong> Dữ liệu analytics chi tiết (pageviews, visitors, top pages...) được theo dõi bởi Vercel Analytics. 
-            Truy cập <a href="https://vercel.com/dashboard" target="_blank" rel="noopener noreferrer" className="underline font-medium">Vercel Dashboard</a> để xem báo cáo đầy đủ.
-          </p>
-        </div>
-      </div> */}
     </div>
   );
 }
