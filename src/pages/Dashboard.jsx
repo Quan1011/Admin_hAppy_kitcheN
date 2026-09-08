@@ -2,19 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../config/supabase';
 import { UtensilsCrossed, FolderTree, Eye, EyeOff, ExternalLink, TrendingUp, AlertCircle, Globe } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-const getCountryFlag = (countryCode) => {
-  if (!countryCode || countryCode === 'Unknown') return '🌐';
-  try {
-    const codePoints = countryCode
-      .toUpperCase()
-      .split('')
-      .map(char => 127397 + char.charCodeAt(0));
-    return String.fromCodePoint(...codePoints);
-  } catch (e) {
-    return '🌐';
-  }
-};
+import CountryFlag from '../components/CountryFlag';
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -128,7 +116,7 @@ export default function Dashboard() {
             <ExternalLink className="w-4 h-4" />
           </a> */}
         </div>
-        
+
         {analyticsTimeSeries && analyticsTimeSeries.length > 0 ? (
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-3 h-[300px] w-full">
@@ -147,51 +135,51 @@ export default function Dashboard() {
                       <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis 
-                    dataKey="date" 
+                  <XAxis
+                    dataKey="date"
                     axisLine={false}
                     tickLine={false}
                     tick={{ fill: '#6b7280', fontSize: 12 }}
                     dy={10}
                   />
-                  <YAxis 
+                  <YAxis
                     axisLine={false}
                     tickLine={false}
                     tick={{ fill: '#6b7280', fontSize: 12 }}
                     dx={-10}
                   />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      borderRadius: '8px', 
-                      border: 'none', 
-                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' 
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: '8px',
+                      border: 'none',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
                     }}
                   />
-                  <Area 
-                    type="monotone" 
+                  <Area
+                    type="monotone"
                     name="Pageviews (Lượt xem)"
-                    dataKey="pageviews" 
-                    stroke="#f97316" 
+                    dataKey="pageviews"
+                    stroke="#f97316"
                     strokeWidth={2}
-                    fillOpacity={1} 
-                    fill="url(#colorPageviews)" 
+                    fillOpacity={1}
+                    fill="url(#colorPageviews)"
                     activeDot={{ r: 6, strokeWidth: 0 }}
                   />
-                  <Area 
-                    type="monotone" 
+                  <Area
+                    type="monotone"
                     name="Visitors (Khách)"
-                    dataKey="visitors" 
-                    stroke="#3b82f6" 
+                    dataKey="visitors"
+                    stroke="#3b82f6"
                     strokeWidth={2}
-                    fillOpacity={1} 
-                    fill="url(#colorVisitors)" 
+                    fillOpacity={1}
+                    fill="url(#colorVisitors)"
                     activeDot={{ r: 6, strokeWidth: 0 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-            
+
             <div className="lg:col-span-1 border-t lg:border-t-0 lg:border-l border-gray-100 pt-6 lg:pt-0 lg:pl-6">
               <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
                 <Globe className="w-4 h-4 text-emerald-600" /> Top Quốc Gia
@@ -201,7 +189,7 @@ export default function Dashboard() {
                   [...analyticsCountries].sort((a, b) => b.visitors - a.visitors).slice(0, 5).map((countryData, idx) => (
                     <div key={idx} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="">{getCountryFlag(countryData.country)}</span>
+                        <CountryFlag countryCode={countryData.country} />
                         <span className="text-sm font-medium text-gray-700">{countryData.country}</span>
                       </div>
                       <div className="text-right flex flex-col">
